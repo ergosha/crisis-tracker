@@ -21,6 +21,10 @@ public class EventService {
         eventRepository.save(event);
     }
 
+    public List<Event> getAllEvents() {
+    return eventRepository.findAll();
+    }
+
     public SituationState deriveSituationState() {
         List<Event> events = eventRepository.findAll();
 
