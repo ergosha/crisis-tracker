@@ -18,12 +18,25 @@ public class EventService {
     }
 
     public void createEvent(Event event) {
+        validateEvent(event);
         eventRepository.save(event);
     }
 
     public List<Event> getAllEvents() {
     return eventRepository.findAll();
     }
+
+    private void validateEvent(Event event) {
+    if (event.getType() == null) {
+        throw new IllegalArgumentException("Event type must be provided");
+    }
+    if (event.getSeverity() == null) {
+        throw new IllegalArgumentException("Severity must be provided");
+    }
+    if (event.getLocation() == null || event.getLocation().isBlank()) {
+        throw new IllegalArgumentException("Location must not be empty");
+    }
+}
 
     public SituationState deriveSituationState() {
         List<Event> events = eventRepository.findAll();
