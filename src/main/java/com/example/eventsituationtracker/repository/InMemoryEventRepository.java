@@ -1,4 +1,4 @@
-package com.example.eventsituationtracker.repository;
+/*package com.example.eventsituationtracker.repository;
 
 import com.example.eventsituationtracker.domain.Event;
 
@@ -21,4 +21,4 @@ public class InMemoryEventRepository implements EventRepository {
     public List<Event> findAll() {
         return List.copyOf(events);
     }
-}
+}*/

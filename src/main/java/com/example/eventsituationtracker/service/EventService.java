@@ -1,14 +1,18 @@
 package com.example.eventsituationtracker.service;
 
-import com.example.eventsituationtracker.domain.*;
+import com.example.eventsituationtracker.domain.Event;
+import com.example.eventsituationtracker.domain.EventStatus;
+import com.example.eventsituationtracker.domain.SituationState;
 import com.example.eventsituationtracker.repository.EventRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.springframework.stereotype.Service;
 
 @Service
+@Transactional
 public class EventService {
 
     private final EventRepository eventRepository;
@@ -22,22 +26,12 @@ public class EventService {
         eventRepository.save(event);
     }
 
+    @Transactional(readOnly = true)
     public List<Event> getAllEvents() {
-    return eventRepository.findAll();
+        return eventRepository.findAll();
     }
 
-    private void validateEvent(Event event) {
-    if (event.getType() == null) {
-        throw new IllegalArgumentException("Event type must be provided");
-    }
-    if (event.getSeverity() == null) {
-        throw new IllegalArgumentException("Severity must be provided");
-    }
-    if (event.getLocation() == null || event.getLocation().isBlank()) {
-        throw new IllegalArgumentException("Location must not be empty");
-    }
-}
-
+    @Transactional(readOnly = true)
     public SituationState deriveSituationState() {
         List<Event> events = eventRepository.findAll();
 
@@ -53,5 +47,18 @@ public class EventService {
 
         return new SituationState(statusByLocation);
     }
+
+    private void validateEvent(Event event) {
+        if (event.getType() == null) {
+            throw new IllegalArgumentException("Event type must be provided");
+        }
+        if (event.getSeverity() == null) {
+            throw new IllegalArgumentException("Severity must be provided");
+        }
+        if (event.getLocation() == null || event.getLocation().isBlank()) {
+            throw new IllegalArgumentException("Location must not be empty");
+        }
+    }
 }
+
 
