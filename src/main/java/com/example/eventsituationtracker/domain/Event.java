@@ -5,7 +5,13 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-@Table(name = "events")
+@Table(
+    name = "events",
+    indexes = {
+        @Index(name = "idx_event_location", columnList = "location"),
+        @Index(name = "idx_event_type", columnList = "event_type")
+    }
+)
 public class Event {
 
     @Id

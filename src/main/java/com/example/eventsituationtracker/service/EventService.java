@@ -3,7 +3,9 @@ package com.example.eventsituationtracker.service;
 import com.example.eventsituationtracker.domain.Event;
 import com.example.eventsituationtracker.domain.EventStatus;
 import com.example.eventsituationtracker.domain.SituationState;
+import com.example.eventsituationtracker.domain.Severity;
 import com.example.eventsituationtracker.repository.EventRepository;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +31,16 @@ public class EventService {
     @Transactional(readOnly = true)
     public List<Event> getAllEvents() {
         return eventRepository.findAll();
+    }
+
+    @Transactional(readOnly = true)
+    public List<Event> getEventsByLocation(String location) {
+        return eventRepository.findByLocation(location);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Event> getEventsBySeverity(Severity severity) {
+        return eventRepository.findBySeverity(severity);
     }
 
     @Transactional(readOnly = true)
@@ -60,5 +72,6 @@ public class EventService {
         }
     }
 }
+
 
 
