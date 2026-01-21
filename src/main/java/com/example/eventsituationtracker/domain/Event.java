@@ -31,6 +31,16 @@ public class Event {
 
     private String description;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "crisis_id")
+    private Crisis crisis;
+
+    // Getter
+    public Crisis getCrisis() { return crisis; }
+    
+    // Setter
+    public void setCrisis(Crisis crisis) { this.crisis = crisis; }
+
     protected Event() {
         // JPA only
     }
