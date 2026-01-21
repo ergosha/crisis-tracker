@@ -8,8 +8,9 @@ import java.util.UUID;
 @Table(
     name = "events",
     indexes = {
-        @Index(name = "idx_event_location", columnList = "location"),
-        @Index(name = "idx_event_type", columnList = "event_type")
+        @Index(name = "idx_event_crisis", columnList = "crisis_id"),
+        @Index(name = "idx_event_type", columnList = "event_type"),
+        @Index(name = "idx_event_timestamp", columnList = "timestamp")
     }
 )
 public class Event {
@@ -18,50 +19,48 @@ public class Event {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    private Instant timestamp;
-
     @Enumerated(EnumType.STRING)
-    @Column(name = "event_type")
-    private EventType type;
+    @Column(name = "event_type", nullable = false)
+    private CrisisEventType type;
 
     @Enumerated(EnumType.STRING)
     private Severity severity;
 
-    private String location;
+    @Column(nullable = false)
+    private Instant timestamp;
 
+    @Column(columnDefinition = "TEXT")
     private String description;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "crisis_id")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "crisis_id", nullable = false)
     private Crisis crisis;
-
-    // Getter
-    public Crisis getCrisis() { return crisis; }
-    
-    // Setter
-    public void setCrisis(Crisis crisis) { this.crisis = crisis; }
 
     protected Event() {
         // JPA only
     }
 
     public Event(
-        EventType type,
+        CrisisEventType type,
         Severity severity,
-        String location,
         String description
     ) {
-        this.timestamp = Instant.now();
         this.type = type;
         this.severity = severity;
-        this.location = location;
         this.description = description;
+        this.timestamp = Instant.now();
     }
 
+    // Getterit
     public UUID getId() { return id; }
-    public Instant getTimestamp() { return timestamp; }
-    public EventType getType() { return type; }
+    public CrisisEventType getType() { return type; }
     public Severity getSeverity() { return severity; }
-    public String getLocation() { return location; }
+    public Instant getTimestamp() { return timestamp; }
     public String getDescription() { return description; }
+    public Crisis getCrisis() { return crisis; }
+
+    // Setterit
+    public void setCrisis(Crisis crisis) { this.crisis = crisis; }
+    public void setSeverity(Severity severity) { this.severity = severity; }
+    public void setDescription(String description) { this.description = description; }
 }

@@ -2,6 +2,8 @@ package com.example.eventsituationtracker.domain;
 
 import jakarta.persistence.*;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -53,9 +55,13 @@ public class Crisis {
     @Column(name = "closed_at")
     private Instant closedAt;
 
-    // Koordinaatit (latitude, longitude)
+    // Koordinaatit
     private Double latitude;
     private Double longitude;
+
+    // Events liittyvät tähän kriisin
+    @OneToMany(mappedBy = "crisis", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Event> events = new ArrayList<>();
 
     protected Crisis() {
         // JPA only
@@ -92,8 +98,9 @@ public class Crisis {
     public Instant getClosedAt() { return closedAt; }
     public Double getLatitude() { return latitude; }
     public Double getLongitude() { return longitude; }
+    public List<Event> getEvents() { return new ArrayList<>(events); }
 
-    // Setterit (vain kriittisille)
+    // Setterit
     public void setStatus(CrisisStatus status) {
         this.status = status;
         this.updatedAt = Instant.now();
@@ -119,5 +126,11 @@ public class Crisis {
         this.latitude = latitude;
         this.longitude = longitude;
         this.updatedAt = Instant.now();
+    }
+
+    // Event-hallinta
+    public void addEvent(Event event) {
+        event.setCrisis(this);
+        events.add(event);
     }
 }

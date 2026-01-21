@@ -1,18 +1,17 @@
 package com.example.eventsituationtracker.controller;
 
 import com.example.eventsituationtracker.domain.Event;
-import com.example.eventsituationtracker.domain.SituationState;
 import com.example.eventsituationtracker.dto.CreateEventRequest;
 import com.example.eventsituationtracker.service.EventService;
-
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/events")
+@RequestMapping("/api/crises/{crisisId}/events")
 public class EventController {
 
     private final EventService eventService;
@@ -23,25 +22,26 @@ public class EventController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void createEvent(@Valid @RequestBody CreateEventRequest request) {
+    public Event createEvent(
+        @PathVariable UUID crisisId,
+        @Valid @RequestBody CreateEventRequest request
+    ) {
         Event event = new Event(
-                request.getType(),
-                request.getSeverity(),
-                request.getLocation(),
-                request.getDescription()
+            request.getType(),
+            request.getSeverity(),
+            request.getDescription()
         );
-
-        eventService.createEvent(event);
+        return eventService.createEvent(crisisId, event);
     }
 
     @GetMapping
-    public List<Event> getEvents() {
-        return eventService.getAllEvents();
+    public List<Event> getEventsByCrisis(@PathVariable UUID crisisId) {
+        return eventService.getEventsByCrisis(crisisId);
     }
 
-    @GetMapping("/situation")
-    public SituationState getSituation() {
-        return eventService.deriveSituationState();
+    @GetMapping("/{eventId}")
+    public Event getEventById(@PathVariable UUID eventId) {
+        return eventService.getEventById(eventId);
     }
 }
 

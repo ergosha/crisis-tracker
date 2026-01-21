@@ -20,7 +20,6 @@ public class CreateCrisisRequest {
     private String location;
 
     private String description;
-
     private Double latitude;
     private Double longitude;
 
