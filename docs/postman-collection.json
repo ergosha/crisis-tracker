@@ -1,0 +1,380 @@
+{
+  "info": {
+    "name": "Crisis Tracker - Vaihe 1",
+    "description": "API-testit kriisien ja tapahtumien hallintaan. Aseta crisisId-muuttuja ensimmäisen pyynnön jälkeen.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1️⃣ Luo kriisi",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 201) {",
+              "    var jsonData = pm.response.json();",
+              "    pm.environment.set(\"crisisId\", jsonData.id);",
+              "    pm.test(\"Crisis created with ID\", function() {",
+              "        pm.expect(jsonData.id).to.exist;",
+              "        pm.expect(jsonData.status).to.equal(\"OPEN\");",
+              "    });",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"type\": \"MEDICAL\",\n  \"priority\": \"URGENT\",\n  \"title\": \"Suuronnettomuus kauppakeskuksessa\",\n  \"location\": \"Downtown Mall\",\n  \"description\": \"Useita loukkaantuneet\",\n  \"latitude\": 60.1699,\n  \"longitude\": 24.9384\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/crises",
+          "host": ["{{base_url}}"],
+          "path": ["api", "crises"]
+        }
+      }
+    },
+    {
+      "name": "2️⃣ Hae kaikki kriisit",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function() {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"Response is array\", function() {",
+              "    pm.expect(pm.response.json()).to.be.an('array');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{base_url}}/api/crises",
+          "host": ["{{base_url}}"],
+          "path": ["api", "crises"]
+        }
+      }
+    },
+    {
+      "name": "3️⃣ Hae aktiiviset kriisit",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{base_url}}/api/crises/active",
+          "host": ["{{base_url}}"],
+          "path": ["api", "crises", "active"]
+        }
+      }
+    },
+    {
+      "name": "4️⃣ Hae kriisi ID:llä",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function() {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"Crisis has correct ID\", function() {",
+              "    pm.expect(pm.response.json().id).to.equal(pm.environment.get(\"crisisId\"));",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{base_url}}/api/crises/{{crisisId}}",
+          "host": ["{{base_url}}"],
+          "path": ["api", "crises", "{{crisisId}}"]
+        }
+      }
+    },
+    {
+      "name": "5️⃣ Lisää tapahtuma - DISPATCH",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 201\", function() {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "pm.test(\"Event type is DISPATCH\", function() {",
+              "    pm.expect(pm.response.json().type).to.equal(\"DISPATCH\");",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"type\": \"DISPATCH\",\n  \"severity\": \"HIGH\",\n  \"description\": \"Ambulanssi 42 lähetetty paikalle\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/crises/{{crisisId}}/events",
+          "host": ["{{base_url}}"],
+          "path": ["api", "crises", "{{crisisId}}", "events"]
+        }
+      }
+    },
+    {
+      "name": "6️⃣ Lisää tapahtuma - ARRIVED",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"type\": \"ARRIVED\",\n  \"severity\": \"HIGH\",\n  \"description\": \"Ambulanssi saapunut paikalle\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/crises/{{crisisId}}/events",
+          "host": ["{{base_url}}"],
+          "path": ["api", "crises", "{{crisisId}}", "events"]
+        }
+      }
+    },
+    {
+      "name": "7️⃣ Lisää tapahtuma - TREATING",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"type\": \"TREATING\",\n  \"severity\": \"MEDIUM\",\n  \"description\": \"Potilaat saavat hoitoa\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/crises/{{crisisId}}/events",
+          "host": ["{{base_url}}"],
+          "path": ["api", "crises", "{{crisisId}}", "events"]
+        }
+      }
+    },
+    {
+      "name": "8️⃣ Lisää tapahtuma - PATIENT_TRANSPORTED",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"type\": \"PATIENT_TRANSPORTED\",\n  \"severity\": \"LOW\",\n  \"description\": \"Potilas kuljetettu sairaalaan\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/crises/{{crisisId}}/events",
+          "host": ["{{base_url}}"],
+          "path": ["api", "crises", "{{crisisId}}", "events"]
+        }
+      }
+    },
+    {
+      "name": "9️⃣ Hae kriisiin liittyvät tapahtumat",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function() {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"Has 4 events\", function() {",
+              "    pm.expect(pm.response.json().length).to.be.at.least(1);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{base_url}}/api/crises/{{crisisId}}/events",
+          "host": ["{{base_url}}"],
+          "path": ["api", "crises", "{{crisisId}}", "events"]
+        }
+      }
+    },
+    {
+      "name": "🔟 Päivitä status → ONGOING",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status updated to ONGOING\", function() {",
+              "    pm.expect(pm.response.json().status).to.equal(\"ONGOING\");",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"ONGOING\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/crises/{{crisisId}}",
+          "host": ["{{base_url}}"],
+          "path": ["api", "crises", "{{crisisId}}"]
+        }
+      }
+    },
+    {
+      "name": "1️⃣1️⃣ Päivitä priority → CRITICAL",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Priority updated to CRITICAL\", function() {",
+              "    pm.expect(pm.response.json().priority).to.equal(\"CRITICAL\");",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"priority\": \"CRITICAL\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/crises/{{crisisId}}",
+          "host": ["{{base_url}}"],
+          "path": ["api", "crises", "{{crisisId}}"]
+        }
+      }
+    },
+    {
+      "name": "1️⃣2️⃣ Hae kriisit - status ONGOING",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{base_url}}/api/crises/status/ONGOING",
+          "host": ["{{base_url}}"],
+          "path": ["api", "crises", "status", "ONGOING"]
+        }
+      }
+    },
+    {
+      "name": "1️⃣3️⃣ Hae kriisit - sijainti",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{base_url}}/api/crises/location/Downtown%20Mall",
+          "host": ["{{base_url}}"],
+          "path": ["api", "crises", "location", "Downtown%20Mall"]
+        }
+      }
+    },
+    {
+      "name": "1️⃣4️⃣ Päivitä status → RESOLVED",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status updated to RESOLVED\", function() {",
+              "    pm.expect(pm.response.json().status).to.equal(\"RESOLVED\");",
+              "});",
+              "pm.test(\"ResolvedAt is set\", function() {",
+              "    pm.expect(pm.response.json().resolvedAt).to.exist;",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"RESOLVED\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/crises/{{crisisId}}",
+          "host": ["{{base_url}}"],
+          "path": ["api", "crises", "{{crisisId}}"]
+        }
+      }
+    },
+    {
+      "name": "1️⃣5️⃣ Tarkista aktiiviset (pitäisi olla tyhjä)",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{base_url}}/api/crises/active",
+          "host": ["{{base_url}}"],
+          "path": ["api", "crises", "active"]
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "crisisId",
+      "value": ""
+    }
+  ]
+}
