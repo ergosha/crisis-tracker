@@ -1,5 +1,6 @@
 package com.example.eventsituationtracker.domain;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -61,6 +62,7 @@ public class Crisis {
 
     // Events liittyvät tähän kriisin
     @OneToMany(mappedBy = "crisis", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Event> events = new ArrayList<>();
 
     protected Crisis() {

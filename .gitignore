@@ -36,3 +36,20 @@ out/
 
 ### VS Code ###
 .vscode/
+### Mac ###
+.DS_Store
+*.swp
+*.swo
+*~
+
+### Environment ###
+.env
+.env.local
+.env.*.local
+
+### Logs ###
+*.log
+logs/
+
+### OS ###
+Thumbs.db

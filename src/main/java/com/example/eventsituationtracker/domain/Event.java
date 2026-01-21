@@ -1,5 +1,6 @@
 package com.example.eventsituationtracker.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import java.time.Instant;
 import java.util.UUID;
@@ -34,6 +35,7 @@ public class Event {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "crisis_id", nullable = false)
+    @JsonBackReference
     private Crisis crisis;
 
     protected Event() {
